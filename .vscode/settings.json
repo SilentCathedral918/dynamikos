@@ -1,0 +1,16 @@
+{
+  "C_Cpp.default.includePath": [
+    "${workspaceFolder}/dynamikos/**",
+    "${workspaceFolder}/**"
+  ],
+  "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 4, ColumnLimit: 0}",
+
+  "editor.cursorStyle": "block",
+
+  "editor.tabSize": 4,
+  "editor.formatOnSave": true,
+  "files.associations": {
+    "*.h": "c",
+    "variant": "c"
+  }
+}

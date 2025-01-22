@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "name": "Windows",
+            "intelliSenseMode": "windows-msvc-x64",
+            "compilerPath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\Hostx64\\x64\\cl.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:/mingw64/lib/gcc/x86_64-w64-mingw32/14.2.0/include",
+                "C:/mingw64/include",
+                "C:/mingw64/x86_64-w64-mingw32/include"
+            ]
+        }
+    ],
+    "version": 4
+}
