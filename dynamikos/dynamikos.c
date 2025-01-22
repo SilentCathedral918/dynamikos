@@ -151,11 +151,14 @@ void *dk_allocate(dk_allocator *allocator, const size_t size) {
     if (allocator->_used_mem + size_class_->_size > allocator->_capacity)
         return NULL;
 
-    if ((size_class_->_capacity > 0) && (size_class_->_num_blocks > 0))
-        return &size_class_->_blocks[--size_class_->_num_blocks];
+    if ((size_class_->_capacity > 0) && (size_class_->_num_blocks > 0)) {
+        allocator->_used_mem += size_class_->_size;
+        return size_class_->_blocks[--size_class_->_num_blocks];
+    }
 
     void *ptr_ = (void *)((uintptr_t)(allocator->_pool) + allocator->_used_mem);
     allocator->_used_mem += size_class_->_size;
+
     return ptr_;
 }
 bool dk_deallocate(dk_allocator *allocator, void *ptr, const size_t size) {
