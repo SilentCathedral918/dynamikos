@@ -18,7 +18,7 @@ void run_combined_workload(dk_allocator *allocator) {
     } entity;
 
     start_time = clock();
-    for (size_t i = 0; i < ITERATIONS / 5; ++i) {
+    for (size_t i = 0; i < ITERATIONS; ++i) {
         size_t size = sizeof(entity) + (rand() % 64);
         void *ptr = dk_allocate(allocator, size);
         memset(ptr, 0, size);
@@ -32,7 +32,7 @@ void run_combined_workload(dk_allocator *allocator) {
     size_t active_count = 0;
 
     start_time = clock();
-    for (size_t i = 0; i < ITERATIONS / 5; ++i) {
+    for (size_t i = 0; i < ITERATIONS; ++i) {
         if (active_count > 0 && rand() % 2 == 0) {
             size_t index = rand() % active_count;
             dk_deallocate(allocator, allocated[index], sizeof(int));
@@ -46,7 +46,7 @@ void run_combined_workload(dk_allocator *allocator) {
 
     // Fragmentation Stress Test
     start_time = clock();
-    for (size_t i = 0; i < ITERATIONS / 5; ++i) {
+    for (size_t i = 0; i < ITERATIONS; ++i) {
         size_t size = (rand() % 2 == 0) ? sizeof(int) : 1024;
         void *ptr = dk_allocate(allocator, size);
         memset(ptr, 0, size);
@@ -57,7 +57,7 @@ void run_combined_workload(dk_allocator *allocator) {
 
     // String Manipulation
     start_time = clock();
-    for (size_t i = 0; i < ITERATIONS / 5; ++i) {
+    for (size_t i = 0; i < ITERATIONS; ++i) {
         size_t len1 = rand() % 32 + 1;
         size_t len2 = rand() % 32 + 1;
         char *str1 = dk_allocate(allocator, len1);
