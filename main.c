@@ -25,7 +25,7 @@ void run_combined_workload(dk_allocator *allocator) {
         dk_deallocate(allocator, ptr, size);
     }
     end_time = clock();
-    printf("Dynamikos - Randomly Sized Structs: %.6f seconds\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+    printf("Randomly Sized Structs: %.6f seconds\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
     // Interleaved Allocations and Deallocations
     void *allocated[1000] = {0};
@@ -42,7 +42,7 @@ void run_combined_workload(dk_allocator *allocator) {
         }
     }
     end_time = clock();
-    printf("Dynamikos - Interleaved Allocations and Deallocations: %.6f seconds\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+    printf("Interleaved Allocations and Deallocations: %.6f seconds\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
     // Fragmentation Stress Test
     start_time = clock();
@@ -53,7 +53,7 @@ void run_combined_workload(dk_allocator *allocator) {
         dk_deallocate(allocator, ptr, size);
     }
     end_time = clock();
-    printf("Dynamikos - Fragmentation Stress Test: %.6f seconds\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+    printf("Fragmentation Stress Test: %.6f seconds\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
     // String Manipulation
     start_time = clock();
@@ -74,7 +74,7 @@ void run_combined_workload(dk_allocator *allocator) {
         dk_deallocate(allocator, concat, len3);
     }
     end_time = clock();
-    printf("Dynamikos - String Manipulation: %.6f seconds\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+    printf("String Manipulation: %.6f seconds\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
     // Mixed Large and Small Allocations
     start_time = clock();
@@ -85,7 +85,7 @@ void run_combined_workload(dk_allocator *allocator) {
         dk_deallocate(allocator, ptr, size);  // Deallocate
     }
     end_time = clock();
-    printf("Dynamikos - Mixed Large and Small Allocations: %.6f seconds\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+    printf("Mixed Large and Small Allocations: %.6f seconds\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
     // Object Graphs / Trees
     typedef struct node {
@@ -124,7 +124,7 @@ void run_combined_workload(dk_allocator *allocator) {
         }
     }
     end_time = clock();
-    printf("Dynamikos - Object Graphs / Trees: %.6f seconds\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+    printf("Object Graphs / Trees: %.6f seconds\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
     // Large Array Allocations
     start_time = clock();
@@ -135,7 +135,7 @@ void run_combined_workload(dk_allocator *allocator) {
         dk_deallocate(allocator, ptr, size);  // Deallocate
     }
     end_time = clock();
-    printf("Dynamikos - Large Array Allocations: %.6f seconds\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+    printf("Large Array Allocations: %.6f seconds\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
     // Large-Scale String Handling
     start_time = clock();
@@ -157,7 +157,7 @@ void run_combined_workload(dk_allocator *allocator) {
         dk_deallocate(allocator, concat, len3);
     }
     end_time = clock();
-    printf("Dynamikos - Large-Scale String Handling: %.6f seconds\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+    printf("Large-Scale String Handling: %.6f seconds\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 }
 
 int main() {

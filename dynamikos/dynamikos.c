@@ -35,15 +35,12 @@ static void _dk_compute_size_classes(dk_sizeclass *size_classes, size_t *num_cla
         if (size_classes)
             size_classes[index_]._size = _dk_apply_alignment(current_size_, DK_ALIGNMENT);
 
-        printf("index: %u _ containing size: %u\n", index_, _dk_apply_alignment(current_size_, DK_ALIGNMENT));
-
         current_size_ = (size_t)((float)current_size_ * ratio_);
     }
 
     if (size_classes)
         size_classes[index_]._size = capacity;
 
-    printf("index: %u _ containing size: %u\n", index_, _dk_apply_alignment(capacity, DK_ALIGNMENT));
     *num_classes = ++index_;
 }
 static inline size_t _dk_log2_size(size_t size) {
