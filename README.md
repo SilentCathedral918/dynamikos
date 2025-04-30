@@ -48,8 +48,8 @@ dk_destruct(allocator);
 ```
 
 ---
-## Performance Benchmarks (-O2)
-The benchmarks below compare Dynamikos with Mimalloc, emphasizing small to medium workloads. The allocator was tested with memory pool of 1GB.
+## Performance Benchmarks
+The benchmarks emphasizes small to medium workloads. The allocator was tested with memory pool of 1GB and optimization flag of -O2.
 
 ##### Randomly Sized Structs
 Simulates allocating, initializing, and freeing small to moderately sized structs with varying sizes to test allocator's handling of diverse workloads.
@@ -181,6 +181,7 @@ for (size_t i = 0; i < ITERATIONS; ++i) {
 }
 ```
 Result: **1,000,000** operations completed in **84.035 seconds**
+
 **NOTE**: This result highlights the overhead involved in managing large allocations and provides insight into areas that could benefit from further optimization.
 
 ##### Large-Scale String Handling
