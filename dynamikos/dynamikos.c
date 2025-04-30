@@ -15,31 +15,27 @@ struct dynamikos_sizeclass {
     size_t _capacity;
 };
 struct dynamikos_allocator {
-    size_t _used_mem;
-    size_t _capacity;
+    size_t        _used_mem;
+    size_t        _capacity;
     dk_sizeclass *_size_classes;
-    size_t _num_classes;
-    void *_pool;
+    size_t        _num_classes;
+    void         *_pool;
 };
 
-static inline size_t _dk_apply_alignment(const size_t size, const size_t alignment) {
-    return ((size + (alignment - 1)) / alignment) * alignment;
-}
-static void _dk_compute_size_classes(dk_sizeclass *size_classes, size_t *num_classes, const size_t capacity) {
+static inline size_t _dk_apply_alignment(const size_t size, const size_t alignment) { return ((size + (alignment - 1)) / alignment) * alignment; }
+static void          _dk_compute_size_classes(dk_sizeclass *size_classes, size_t *num_classes, const size_t capacity) {
     const float ratio_ = 1.618f;
 
     size_t current_size_ = 4;
-    size_t index_ = 0;
+    size_t index_        = 0;
 
     for (; current_size_ <= capacity; ++index_) {
-        if (size_classes)
-            size_classes[index_]._size = _dk_apply_alignment(current_size_, DK_ALIGNMENT);
+        if (size_classes) size_classes[index_]._size = _dk_apply_alignment(current_size_, DK_ALIGNMENT);
 
         current_size_ = (size_t)((float)current_size_ * ratio_);
     }
 
-    if (size_classes)
-        size_classes[index_]._size = capacity;
+    if (size_classes) size_classes[index_]._size = capacity;
 
     *num_classes = ++index_;
 }
@@ -80,7 +76,7 @@ static size_t _dk_get_size_class_index(dk_allocator *allocator, const size_t siz
     const float log2_ratio_ = 0.694f;
 
     size_t aligned_size_ = _dk_apply_alignment(size, DK_ALIGNMENT);
-    size_t log2_size_ = _dk_log2_size(aligned_size_);
+    size_t log2_size_    = _dk_log2_size(aligned_size_);
 
     size_t index_ = (size_t)((float)log2_size_ / log2_ratio_);
     while (index_ > 0 && aligned_size_ <= allocator->_size_classes[index_]._size) --index_;
@@ -88,41 +84,37 @@ static size_t _dk_get_size_class_index(dk_allocator *allocator, const size_t siz
 }
 
 dk_allocator *dk_construct(const size_t capacity) {
-    if (!capacity)
-        return NULL;
+    if (!capacity) return NULL;
 
-    size_t capacity_ = _dk_apply_alignment(capacity, DK_ALIGNMENT);
+    size_t capacity_        = _dk_apply_alignment(capacity, DK_ALIGNMENT);
     size_t num_sizeclasses_ = 0;
     _dk_compute_size_classes(NULL, &num_sizeclasses_, capacity_);
 
     size_t sizeclasses_size_ = sizeof(dk_sizeclass) * num_sizeclasses_;
-    size_t total_size_ = sizeof(dk_allocator) + sizeclasses_size_ + capacity_;
+    size_t total_size_       = sizeof(dk_allocator) + sizeclasses_size_ + capacity_;
 
     uintptr_t addr_base_ = (uintptr_t)malloc(total_size_);
-    if (!addr_base_)
-        return NULL;
+    if (!addr_base_) return NULL;
 
     dk_allocator *allocator_ = (dk_allocator *)addr_base_;
-    allocator_->_used_mem = 0;
-    allocator_->_capacity = capacity_;
+    allocator_->_used_mem    = 0;
+    allocator_->_capacity    = capacity_;
 
-    uintptr_t addr_sizeclasses_ = addr_base_ + sizeof(dk_allocator);
-    dk_sizeclass *size_classes_ = (dk_sizeclass *)addr_sizeclasses_;
-    for (size_t i = 0; i < num_sizeclasses_; ++i)
-        memset(&size_classes_[i], 0, sizeof(dk_sizeclass));
+    uintptr_t     addr_sizeclasses_ = addr_base_ + sizeof(dk_allocator);
+    dk_sizeclass *size_classes_     = (dk_sizeclass *)addr_sizeclasses_;
+    for (size_t i = 0; i < num_sizeclasses_; ++i) memset(&size_classes_[i], 0, sizeof(dk_sizeclass));
     _dk_compute_size_classes(size_classes_, &num_sizeclasses_, capacity_);
     allocator_->_size_classes = size_classes_;
-    allocator_->_num_classes = num_sizeclasses_;
+    allocator_->_num_classes  = num_sizeclasses_;
 
     uintptr_t addr_pool_ = addr_sizeclasses_ + sizeclasses_size_;
-    allocator_->_pool = (void *)addr_pool_;
+    allocator_->_pool    = (void *)addr_pool_;
     memset(allocator_->_pool, 0, capacity_);
 
     return allocator_;
 }
 bool dk_destruct(dk_allocator *allocator) {
-    if (!allocator)
-        return false;
+    if (!allocator) return false;
 
     for (size_t i = 0; i < allocator->_num_classes; ++i) {
         dk_sizeclass *class_ = &allocator->_size_classes[i];
@@ -139,14 +131,12 @@ bool dk_destruct(dk_allocator *allocator) {
     return true;
 }
 void *dk_allocate(dk_allocator *allocator, const size_t size) {
-    if (!allocator || !size)
-        return NULL;
+    if (!allocator || !size) return NULL;
 
-    size_t index_ = _dk_get_size_class_index(allocator, size);
+    size_t        index_      = _dk_get_size_class_index(allocator, size);
     dk_sizeclass *size_class_ = &allocator->_size_classes[index_];
 
-    if (allocator->_used_mem + size_class_->_size > allocator->_capacity)
-        return NULL;
+    if (allocator->_used_mem + size_class_->_size > allocator->_capacity) return NULL;
 
     if ((size_class_->_capacity > 0) && (size_class_->_num_blocks > 0)) {
         allocator->_used_mem += size_class_->_size;
@@ -159,22 +149,20 @@ void *dk_allocate(dk_allocator *allocator, const size_t size) {
     return ptr_;
 }
 bool dk_deallocate(dk_allocator *allocator, void *ptr, const size_t size) {
-    if (!allocator || !ptr || !size)
-        return false;
+    if (!allocator || !ptr || !size) return false;
 
     const float ratio_ = 1.618f;
 
-    size_t index_ = _dk_get_size_class_index(allocator, size);
+    size_t        index_      = _dk_get_size_class_index(allocator, size);
     dk_sizeclass *size_class_ = &allocator->_size_classes[index_];
 
     if (size_class_->_num_blocks == size_class_->_capacity) {
         size_t new_capacity_ = !size_class_->_capacity ? DK_DEFAULT_CAPACITY : (size_t)((float)size_class_->_capacity * ratio_);
 
         void **new_blocks_ = realloc(size_class_->_blocks, sizeof(void *) * new_capacity_);
-        if (!new_blocks_)
-            return false;
+        if (!new_blocks_) return false;
 
-        size_class_->_blocks = new_blocks_;
+        size_class_->_blocks   = new_blocks_;
         size_class_->_capacity = new_capacity_;
     }
 
@@ -183,24 +171,32 @@ bool dk_deallocate(dk_allocator *allocator, void *ptr, const size_t size) {
 
     return true;
 }
-bool dk_clear(dk_allocator *allocator) {
-    if (!allocator)
-        return false;
+void *dk_reallocate(dk_allocator *allocator, void *ptr, const size_t old_size, const size_t new_size) {
+    if (!allocator || !ptr || !old_size || !new_size) return NULL;
+    if (new_size <= old_size) return ptr;
 
-    for (size_t i = 0; i < allocator->_num_classes; ++i)
-        allocator->_size_classes[i]._num_blocks = 0;
+    void *new_ptr_ = dk_allocate(allocator, new_size);
+    if (!new_ptr_) return NULL;
+
+    size_t        old_index_      = _dk_get_size_class_index(allocator, old_size);
+    dk_sizeclass *old_size_class_ = &allocator->_size_classes[old_index_];
+    
+    size_t copy_size_ = old_size_class_->_size < new_size ? old_size_class_->_size : new_size;
+    memcpy(new_ptr_, ptr, copy_size_);
+    
+    dk_deallocate(allocator, ptr, old_size);
+    return new_ptr_;
+}
+bool dk_clear(dk_allocator *allocator) {
+    if (!allocator) return false;
+
+    for (size_t i = 0; i < allocator->_num_classes; ++i) allocator->_size_classes[i]._num_blocks = 0;
 
     memset(allocator->_pool, 0, allocator->_capacity);
     allocator->_used_mem = 0;
 
     return true;
 }
-inline size_t dk_get_used_memory(dk_allocator *allocator) {
-    return !allocator ? 0 : allocator->_used_mem;
-}
-inline size_t dk_get_capacity(dk_allocator *allocator) {
-    return !allocator ? 0 : allocator->_capacity;
-}
-inline void *dk_get_memory_pool(dk_allocator *allocator) {
-    return !allocator ? NULL : allocator->_pool;
-}
+inline size_t dk_get_used_memory(dk_allocator *allocator) { return !allocator ? 0 : allocator->_used_mem; }
+inline size_t dk_get_capacity(dk_allocator *allocator) { return !allocator ? 0 : allocator->_capacity; }
+inline void  *dk_get_memory_pool(dk_allocator *allocator) { return !allocator ? NULL : allocator->_pool; }
